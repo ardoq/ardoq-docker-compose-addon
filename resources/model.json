@@ -1,0 +1,91 @@
+{
+  "name": "docker-compose",
+  "description": "Docker compose model",
+  "referenceTypes": {
+    "0": {
+      "name": "volume-from",
+      "id": 0,
+      "line": "dotted",
+      "color": "blue",
+      "lineEnding": "bottom",
+      "returnsValue": true,
+      "charLine": "=",
+      "svgStyle": "stroke: blue;stroke-dasharray:2"
+    },
+    "1": {
+      "name": "instance-of",
+      "id": 1,
+      "line": "solid",
+      "color": "black",
+      "lineEnding": "both",
+      "returnsValue": true,
+      "charLine": "-",
+      "svgStyle": "stroke: black;"
+    },
+    "2": {
+      "name": "Implicit",
+      "id": 2,
+      "line": "dashed",
+      "color": "red",
+      "lineEnding": "bothFilled",
+      "returnsValue": false,
+      "charLine": "_",
+      "svgStyle": "stroke: red;stroke-dasharray:10,5"
+    },
+    "3": {
+      "name": "link",
+      "id": 3,
+      "line": "dotted",
+      "color": "orange",
+      "lineEnding": "both",
+      "returnsValue": false,
+      "charLine": "+",
+      "svgStyle": "stroke: orange;stroke-dasharray:2"
+    },
+    "4": {
+      "name": "Parent image",
+      "id": 4,
+      "line": "solid",
+      "color": "gray",
+      "lineEnding": "circle",
+      "returnsValue": false,
+      "charLine": "?",
+      "svgStyle": "stroke: gray;"
+    }
+  },
+  "root": {
+    "p1444219080853": {
+      "description": "",
+      "children": {},
+      "index": 1,
+      "canLinkTo": [
+        "p1444219080853"
+      ],
+      "name": "Image",
+      "icon": "film",
+      "defaults": {
+        "description": ""
+      },
+      "level": 1,
+      "returnsValue": false,
+      "id": "p1444219080853"
+    },
+    "p1444219223126": {
+      "description": "",
+      "children": {},
+      "index": 2,
+      "canLinkTo": [
+        "p1444219223126",
+        "p1444219080853"
+      ],
+      "name": "Container",
+      "icon": "fighter-jet",
+      "defaults": {
+        "description": ""
+      },
+      "level": 1,
+      "returnsValue": false,
+      "id": "p1444219223126"
+    }
+  }
+}

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ardoq Maven dependency import Add-on</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/app.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body style="width:90%; padding:20px;">
+
+<div class="jumbotron">
+    <div class="container">
+        <img src="/img/small_v.png" style="width:100px; float:right;"></img>
+
+        <h2>Docker Compose</h2>
+
+        <p>Import Docker Compose YAML</p></br>
+    </div>
+</div>
+
+<form action="/api/import" method="POST" class="form-horizontal" id="importForm">
+
+    <div id="yamlIdDiv">
+        <div class="form-group">
+            <label for="yaml" class="col-sm-2 control-label">Docker Compose YAML</label>
+
+            <div class="col-sm-10">
+                <textarea rows="10" class="form-control" id="yaml" name="yaml"
+                       placeholder="Paste the content of your YAML file here.
+
+For instance:
+        web:
+          image: ardoq/web/3.42
+          links:
+            -api
+        api:
+          image: ardoq/api:2.332
+          volumes-from:
+            -data
+        data:
+          image:alpine:3.2"
+
+                       required></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="wsname" class="col-sm-2 control-label">Workspace name</label>
+
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="wsname"
+                   placeholder="Enter the name of your workspace"
+                   name="wsname" required>
+        </div>
+    </div>
+
+
+    <div class="form-group hidden">
+        <label for="org" class="col-sm-2 control-label">Organization</label>
+
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="org"
+                   placeholder="Organization name" name="org" >
+        </div>
+    </div>
+
+    <div class="form-group hidden">
+        <label for="token" class="col-sm-2 control-label">Api token</label>
+
+        <div class="col-sm-10">
+            <input type="password" class="form-control" id="token"
+                   placeholder="Token" name="token" >
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                Advanced
+            </button>
+            <div class="collapse" id="collapseExample">
+                <div class="well">
+
+
+                    <div class="alert alert-info">
+                        <h4>Optional</h4>
+                        To enable Ardoq to visualize relations from Docker images to parent image tags, we need to know which repositories you would like to include.
+                        For instance if your applications are based on Alpine Linux and Ubuntu, add <code>alpine, ubuntu</code> below, and references to the tags/versions you use will be included.
+                    </div>
+
+                    <div class="form-group">
+                        <label for="repos" class="col-sm-2 control-label">Repositories</label>
+
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="repos"
+                                   placeholder="alpine, ubuntu, ardoq/nginx"
+                                   name="repos">
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <h4>Private registry</h4>
+                        If your base images are private, add username and password to allow us to list the tags.
+                    </div>
+
+                    <div class="form-group">
+                        <label for="account" class="col-sm-2 control-label">Account</label>
+
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="account"
+                                   placeholder=""
+                                   name="account">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="col-sm-2 control-label">Password</label>
+
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="password"
+                                   placeholder=""
+                                   name="password">
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <h4>Automation</h4>
+                        To automate this visaliation, you can post the yaml directly from your CI system:<br/>
+
+                        <code>
+                            url -i -XPOST -H "Content-Type: application/json" -H "Accept: application/json" --data-binary @docker-compose.yml 'http://docker-compose.addon.ardoq.com/yaml?token=&lt;token&gt;&org=&lt;organization&gt;&wsname=&lt;workspace-name&gt;&repos=&lt;repositories&gt;&account=&lt;account&gt;&password=&lt;pwd&gt;'
+                        </code>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-success">&#9654; Start import</button>
+        </div>
+    </div>
+</form>
+
+
+<div id="error-dialog" class="alert alert-danger" role="alert" style="display:none">
+    <p>Sorry. Something went wrong with your import</p>
+    <button id="clear-form" class="btn btn-link">Back</button>
+</div>
+
+<div id="progress-dialog" class="alert" style="display:none">
+    <i class="fa fa-spinner fa-spin" style="font-size:100px"></i>
+</div>
+
+<div id="result-dialog" class="alert alert-success" style="display:none">
+    <strong>Success!</strong>
+    Your docker-compose file is now imported, and ready to <strong><a href="#" target="_parent">explore here!</a></strong>
+</div>
+
+</div>
+
+<script src="/js/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/app.js"></script>
+
+</body>
+</html>
