@@ -4,3 +4,4 @@ ardoq_docker_compose_addon.iml
 target
 .nrepl-port
 .iml
+ardoq-docker-compose.iml
