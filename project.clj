@@ -12,8 +12,7 @@
                  [javax.servlet/servlet-api "2.5"]
                  [ring/ring-core "1.4.0"]
                  [clj-yaml "0.4.0"]
-                 [cheshire "5.4.0"]
-                 [com.ardoq/ardoq-client "0.1.0-SNAPSHOT"]]
+                 [cheshire "5.4.0"]]
   :uberjar {:aot  [ardoq.dockercompose.server]
             :main ardoq.dockercompose.server}
   :profiles {:dev {:plugins      [[lein-cljsbuild "1.0.6"]]
