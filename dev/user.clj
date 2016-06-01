@@ -15,6 +15,9 @@
 
   (def yamlstr (slurp "../ardoq-docker/demo.yml"))
   (def yaml (parse-yaml yamlstr) )
+  (def compose-version (:version yaml))
+  (def services (if (= "2" compose-version) (:services yaml) yaml))
+
   (prn yaml)
   (def extra-tags "alpine, mongo, ardoq/java, ardoq/nginx")
   (def account "account")
@@ -26,13 +29,13 @@
   (def anc ("ab42a566fd8d0116c85358713f349d41ef3380edcb348029cd61cf1cfc93e34a" "b5037295b82a9711eb05846e5f28580ec8a489c1876f96de939f5ff2582db4c2" "425674085c9b748f044c4c326fa6a48b150b4f962ede09da61a72a02c7f55dca" "d48262f8d97536ee24d43186afa30e3502a8f59ae5a040a1592742be73e5130f" "01c856e51b6a9ea70b228a3b5d4f80fb07f782f76fa7531288091d82a7c57fa1" "1650a69e2c9b6c3fd61d92a7d5ce398b456209d795ff247e377559e2d41ba695" "7ad81e981b6b8aaf06ca46e1208acaed89d3e336c18faf582ea7c8c045584071" "3556fb1e90e16e17a366d02f8c32f0d0306a4f19edc9cdf0d0fb857563a06c1c" "bf945eaa6245801cdbd9539fa63ea9f3b518a444beb72991f1b66fb57005a956" "22bf8f6368f4aee1cc6cc07656b1d5bd95da90f953598c880c8ac7e12b0dc6d2" "9d411eac36fc54687d3edc5fcd9228ae99bfeefe3e3ecbf43a75f7aadf82b7e3" "3e9ca8eedb57ea33fd486140031c481cb6e453391adf1195959db41af8ba3b8a" "7a38817719ff7fa1d12d7e84a98953937bc63fd086324ad7c7612f9198f86000" "40eb21254519eae5098432bc3f1addb860127870f1fec14bfcf55a68e525395d" "31f630c65071968699d327be41add2e301d06568a4914e1aa67c98e1db34a9d8"))
 
   (def org "ardoq")
-  (def token "......")
-  (def client (client/client {:url "http://dockerhost"
+  (def token "....")
+  (def client (client/client {:url "http://localhost:8080"
                               :token token
                               :org org}))
 
-  (def model (find-or-create-model client ))
-  (def workspace (find-or-create-workspace client "testF" model))
+  (def template (find-or-create-template client ))
+  (def workspace (create-workspace client "docker compose test 1" template))
 
   (def containers-by-name (-> (yaml->container-components yaml workspace model)
                            (create-resources client)

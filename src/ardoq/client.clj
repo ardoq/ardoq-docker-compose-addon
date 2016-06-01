@@ -6,7 +6,7 @@
 (defprotocol ArdoqResource
   (resource-path [this]))
 
-(defrecord Workspace [name description componentModel]
+(defrecord Workspace [name description componentTemplate]
   ArdoqResource
   (resource-path [_] "workspace"))
 

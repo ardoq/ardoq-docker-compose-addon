@@ -1,4 +1,4 @@
-FROM ardoq/leiningen:jdk8
+FROM ardoq/leiningen:3.3-8u74-2.6.1
 
 MAINTAINER Kristian Helgesen "kristian@ardoq.com"
 

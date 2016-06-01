@@ -16,7 +16,6 @@
           options)
         asdf (prn auth-options)
         {:keys [status headers body error] :as resp} @(http/get (str "https://index.docker.io/v1/repositories/" repository "/images") auth-options)]
-    (prn body)
     (if error
       (throw (RuntimeException. error))
       (:x-docker-token headers))))
@@ -61,12 +60,6 @@
                    :headers {"authorization" (str "Token " auth-token)
                              "accept"        "application/json"}}
           {:keys [status headers body error] :as resp} @(http/get (str "https://registry-1.docker.io/v1/images/" imageid "/ancestry") options)]
-
-      (prn (str "image ancestry " imageid))
-      (prn (str "aut " auth-token))
-      (prn (str "headers: " headers))
-      (prn (str "body: " body))
-      (prn (str "status: " status))
 
       (try
         (parse-string body true)
