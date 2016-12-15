@@ -1,4 +1,4 @@
-(defproject ardoq-docker-compose "0.1.0-SNAPSHOT"
+(defproject ardoq-docker-compose "1.0"
   :description "Docker Compose add-on for Ardoq"
   :url "http://ardoq.com"
   :license {:name "Eclipse Public License"

@@ -13,6 +13,7 @@ confirm () {
 
 FROM_IMAGE=$(grep FROM Dockerfile|cut -d' ' -f2)
 docker run --rm -v ~/.m2/repository:/root/.m2/repository -v $(pwd):/build -w /build -e "LEIN_ROOT=true" $FROM_IMAGE lein uberjar
+echo "Done building"
 
 VERSION=$(grep "ENV VERSION" Dockerfile|cut -d' ' -f3)
 
