@@ -27,6 +27,7 @@ deployment:
       # inserts DOCKER_AUTH and DOCKER_EMAIL from environment (NB DOCKER_AUTH is base64 of username and password)
       # - envsubst < dockercfg.template > ~/.dockercfg
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - echo "docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS"
       - docker push ${TAG}
       - docker tag ${TAG} ${LATEST}
       - docker push ${LATEST}
