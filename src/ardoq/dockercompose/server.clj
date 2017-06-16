@@ -17,7 +17,7 @@
 (defrecord DockerComposeAddon []
   component/Lifecycle
   (start [this]
-    (assoc this :server (start-server #'app 9009)))
+    (assoc this :server (start-server #'app 80)))
   (stop [this]
     (stop-server (:server this))
     (dissoc this :server)))

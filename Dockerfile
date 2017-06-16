@@ -8,7 +8,7 @@ ENV ARDOQ_WEB_URL https://app.ardoq.com
 
 COPY ./target/ardoq-docker-compose-$VERSION-standalone.jar /opt/ardoq-docker-compose-standalone.jar
 
-EXPOSE 9009
+EXPOSE 80
 
 WORKDIR /opt
 
