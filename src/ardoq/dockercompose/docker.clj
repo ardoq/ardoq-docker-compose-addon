@@ -1,8 +1,8 @@
 (ns ardoq.dockercompose.docker
   (:require
-    [cheshire.core :refer [generate-string parse-string]]
-    [clojure.set :refer [union map-invert]]
-    [org.httpkit.client :as http]))
+   [cheshire.core :refer [generate-string parse-string]]
+   [clojure.set :refer [union map-invert]]
+   [org.httpkit.client :as http]))
 
 
 (defn v1-authorize [account password repository]
@@ -12,8 +12,8 @@
                  :headers {"X-Docker-Token" "true"
                            "accept"         "application/json"}}
         auth-options (if (every? not-empty [account password])
-          (assoc options :basic-auth [account password])
-          options)
+                       (assoc options :basic-auth [account password])
+                       options)
         asdf (prn auth-options)
         {:keys [status headers body error] :as resp} @(http/get (str "https://index.docker.io/v1/repositories/" repository "/images") auth-options)]
     (if error
@@ -22,61 +22,58 @@
 
 
 (defn v1-list-tags "Returns a map with image <repository:tag> as keys, and image hashes as values" [auth-token repository]
-  (let [
-        options {:timeout 30000
+  (let [options {:timeout 30000
                  :headers {"authorization" (str "Token " auth-token)
                            "accept" "application/json"}}
-        {:keys [status headers body error] :as resp} @(http/get (str "https://registry-1.docker.io/v1/repositories/" repository "/tags") options)]
+        {:keys [status headers body error] :as resp} @(http/get (str "https://registry-1.docker.io/v2/" repository "/tags/list/") options)]
 
     (prn (str "listing all tags of repository " repository))
     (prn status)
     (if error
       (prn error)
       (->>
-        (parse-string body true)
-        (reduce
-          (fn [acc [k v]] (assoc acc (str repository ":" (name k)) v))
-          {})))))
+       (parse-string body true)
+       (reduce
+        (fn [acc [k v]] (assoc acc (str repository ":" (name k)) v))
+        {})))))
 
 
 (defn list-tags [account password repository]
   (some->
-    (v1-authorize account password repository)
-    (v1-list-tags repository)))
+   (v1-authorize account password repository)
+   (v1-list-tags repository)))
 
 
 (defn list-tags-for-all [account password repositories]
   (reduce
-    (fn [acc repo-name] (union acc (list-tags account password repo-name)))
-    {}
-    repositories))
+   (fn [acc repo-name] (union acc (list-tags account password repo-name)))
+   {}
+   repositories))
 
 
 (defn v1-image-ancestry [auth-token imageid]
   (if (empty? imageid)
     (do (prn "Empty image ID!!") []))
-    (let [
-          options {:timeout 15000
-                   :headers {"authorization" (str "Token " auth-token)
-                             "accept"        "application/json"}}
-          {:keys [status headers body error] :as resp} @(http/get (str "https://registry-1.docker.io/v1/images/" imageid "/ancestry") options)]
+  (let [options {:timeout 15000
+                 :headers {"authorization" (str "Token " auth-token)
+                           "accept"        "application/json"}}
+        {:keys [status headers body error] :as resp} @(http/get (str "https://registry-1.docker.io/v2/images/" imageid "/ancestry") options)]
 
-      (try
-        (parse-string body true)
-        (catch Exception e
-          (prn (str "caught exception: " (.getMessage e)))
-          []
-          ))))
+    (try
+      (parse-string body true)
+      (catch Exception e
+        (prn (str "caught exception: " (.getMessage e)))
+        []))))
 
 
-  (defn image-ancestry [account password repository image-hash]
-    (if (empty? image-hash)
-      (do (prn "Empty image id!")
-          [])
-      (do (prn (str "finding ancestors in repo " repository " for image " image-hash "."))
-          (some->
-            (v1-authorize account password repository)
-            (v1-image-ancestry image-hash)))))
+(defn image-ancestry [account password repository image-hash]
+  (if (empty? image-hash)
+    (do (prn "Empty image id!")
+        [])
+    (do (prn (str "finding ancestors in repo " repository " for image " image-hash "."))
+        (some->
+         (v1-authorize account password repository)
+         (v1-image-ancestry image-hash)))))
 
 
 (defn- v2-authorize [account password repository]
@@ -109,21 +106,15 @@
       (parse-string body true))))
 
 (defn v2-manifest [account password repository tag]
-
   (some->
-    (v2-authorize account password repository)
-    (p-v2-manifest repository tag)
-    )
-  )
+   (v2-authorize account password repository)
+   (p-v2-manifest repository tag)))
 
 
 (defn v2-list-tags [account password repository]
-
   (some->
-    (v2-authorize account password repository)
-    (p-v2-list-tags repository)
-    )
-  )
+   (v2-authorize account password repository)
+   (p-v2-list-tags repository)))
 
 
 

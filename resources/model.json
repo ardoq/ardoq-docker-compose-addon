@@ -3,26 +3,32 @@
   "useAsTemplate": true,
   "description": "Docker Compose model",
   "category": "Technology",
+  "startView": "reader",
+  "defaultViews": [
+    "reader"
+  ],
+  "blankTemplate": false,
+  "flexible": false,
   "referenceTypes": {
     "0": {
+      "name": "Volume from",
+      "id": 0,
       "svgStyle": "stroke: blue;stroke-dasharray:2",
       "charLine": "=",
       "returnsValue": false,
       "lineEnding": "bottom",
       "color": "blue",
-      "line": "dotted",
-      "id": 0,
-      "name": "volume-from"
+      "line": "dotted"
     },
     "1": {
+      "name": "Instance of",
+      "id": 1,
       "svgStyle": "stroke: black;",
       "charLine": "-",
       "returnsValue": false,
       "lineEnding": "both",
       "color": "black",
-      "line": "solid",
-      "id": 1,
-      "name": "instance-of"
+      "line": "solid"
     },
     "2": {
       "name": "Implicit",
@@ -35,24 +41,24 @@
       "svgStyle": "stroke: red;stroke-dasharray:10,5"
     },
     "3": {
+      "name": "Link",
+      "id": 3,
       "svgStyle": "stroke: orange;stroke-dasharray:2",
       "charLine": "+",
       "returnsValue": false,
       "lineEnding": "both",
       "color": "orange",
-      "line": "dotted",
-      "id": 3,
-      "name": "link"
+      "line": "dotted"
     },
     "4": {
+      "name": "Parent image",
+      "id": 4,
       "svgStyle": "stroke: gray;",
       "charLine": "?",
       "returnsValue": false,
       "lineEnding": "circle",
       "color": "gray",
-      "line": "solid",
-      "id": 4,
-      "name": "Parent image"
+      "line": "solid"
     },
     "5": {
       "name": "Uses",
@@ -67,57 +73,60 @@
   },
   "root": {
     "p1464829730336": {
-      "description": "",
-      "children": {},
+      "level": 1,
       "index": 1,
       "name": "Container",
       "icon": "fighter-jet",
-      "defaults": {
-        "description": ""
-      },
-      "level": 1,
-      "returnsValue": false,
-      "id": "p1464829730336",
-      "image": ""
-    },
-    "p1462960856882": {
       "description": "",
       "children": {},
+      "returnsValue": false,
+      "id": "p1464829730336",
+      "image": null,
+      "color": null,
+      "shape": "state",
+      "standard": "custom"
+    },
+    "p1462960856882": {
+      "level": 1,
       "index": 2,
       "name": "Image",
       "icon": "film",
-      "defaults": {
-        "description": ""
-      },
-      "level": 1,
-      "returnsValue": false,
-      "id": "p1462960856882"
-    },
-    "p1464594388731": {
       "description": "",
       "children": {},
+      "returnsValue": false,
+      "id": "p1462960856882",
+      "image": null,
+      "color": null,
+      "shape": "state",
+      "standard": "custom"
+    },
+    "p1464594388731": {
+      "level": 1,
       "index": 3,
       "name": "Network",
       "icon": "cloud",
-      "defaults": {
-        "description": ""
-      },
-      "level": 1,
-      "returnsValue": false,
-      "id": "p1464594388731"
-    },
-    "p1464594404741": {
       "description": "",
       "children": {},
+      "returnsValue": false,
+      "id": "p1464594388731",
+      "image": null,
+      "color": null,
+      "shape": "state",
+      "standard": "custom"
+    },
+    "p1464594404741": {
+      "level": 1,
       "index": 4,
       "name": "Volume",
       "icon": "folder-open",
-      "defaults": {
-        "description": ""
-      },
-      "level": 1,
+      "description": "",
+      "children": {},
       "returnsValue": false,
-      "id": "p1464594404741"
+      "id": "p1464594404741",
+      "image": null,
+      "color": null,
+      "shape": "state",
+      "standard": "custom"
     }
   }
 }

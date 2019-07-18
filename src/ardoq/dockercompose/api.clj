@@ -10,8 +10,8 @@
             [clojure.string :as str]
             [ardoq.dockercompose.docker :as docker]))
 
-(def ardoq-API-URL (or (System/getenv "ARDOQ_API_URL") "http://localhost:8080"))
-(def ardoq-WEB-URL (or (System/getenv "ARDOQ_WEB_URL") "http://localhost:8080"))
+(def ardoq-API-URL (or (System/getenv "ARDOQ_API_URL") "https://app.ardoq.com"))
+(def ardoq-WEB-URL (or (System/getenv "ARDOQ_WEB_URL") "https://app.ardoq.com"))
 
 (defn index [req]
   {:status  200
@@ -20,9 +20,9 @@
 
 (defn find-or-create-template [client]
   (if-let [template (first
-                  (filter
-                   #(= "Docker Compose" (:name %))
-                   (client/find-all (client/map->Model {}) client)))]
+                     (filter
+                      #(= "Docker Compose" (:name %))
+                      (client/find-all (client/map->Model {}) client)))]
     template
     (-> (client/map->Model (parse-string (slurp (io/resource "model.json")) true))
         (client/create client))))
@@ -48,6 +48,7 @@
 
 
 (defn yaml->container-components [yaml workspace model model-name->type-id]
+  (clojure.pprint/pprint yaml)
   (mapv
    (fn [[k {:keys [image]}]]
      (->
@@ -58,16 +59,16 @@
 
 (defn yaml->network-components [yaml workspace model model-name->type-id]
   (map
-    (fn [network]
-      (client/->Component (name network) "" (:_id workspace) (:_id model) (:network model-name->type-id) nil))
-    (keys (:networks yaml))))
+   (fn [network]
+     (client/->Component (name network) "" (:_id workspace) (:_id model) (:network model-name->type-id) nil))
+   (keys (:networks yaml))))
 
 
 (defn yaml->volume-components [yaml workspace model model-name->type-id]
   (map
-    (fn [network]
-      (client/->Component (name network) "" (:_id workspace) (:_id model) (:volume model-name->type-id) nil))
-    (keys (:volumes yaml))))
+   (fn [network]
+     (client/->Component (name network) "" (:_id workspace) (:_id model) (:volume model-name->type-id) nil))
+   (keys (:volumes yaml))))
 
 
 (defn create-resources [resources client]
@@ -103,85 +104,84 @@
 
 (defn yaml->image-tag-names [yaml]
   (->>
-    yaml
-    (map
-      (fn [[_ {:keys [image]}]] image))
-    (remove nil?)))
+   yaml
+   (map
+    (fn [[_ {:keys [image]}]] image))
+   (remove nil?)))
 
 
 (defn yaml->image-components [image-tag-names workspace model model-name->type-id]
   (mapv
-    (fn [image-tag-name]
-      (->
-        (client/->Component image-tag-name "" (:_id workspace) (:_id model) (:image model-name->type-id) nil)))
-      image-tag-names))
+   (fn [image-tag-name]
+     (->
+      (client/->Component image-tag-name "" (:_id workspace) (:_id model) (:image model-name->type-id) nil)))
+   image-tag-names))
 
 (defn yaml->repo-names [yaml]
   (map
-    (fn [image-tag-name] (first (str/split image-tag-name #":")))
-    (yaml->image-tag-names yaml)))
+   (fn [image-tag-name] (first (str/split image-tag-name #":")))
+   (yaml->image-tag-names yaml)))
 
 
 (defn images->name-id-map [images]
   (into
-    {}
-    (map
-      (fn [c] {(:name c) (:_id c)})
-      images)))
+   {}
+   (map
+    (fn [c] {(:name c) (:_id c)})
+    images)))
 
 
 (defn yaml->container-image-seq [yaml]
   (keep
-    (fn [[k {:keys [image]}]] (if (some? image) {(name k) image}))
-      yaml))
+   (fn [[k {:keys [image]}]] (if (some? image) {(name k) image}))
+   yaml))
 
 
 (defn container-image-seq->ardoq-relations [container-image-seq containers-by-name images-by-name workspace]
   (->>
-    container-image-seq
-    (map
-      (fn [container-image]
-        (client/->Reference (:_id workspace)
-                            (containers-by-name (first(first container-image)))
-                            (images-by-name (second(first container-image))))))
-    (map
-      (fn [ref] (assoc ref :type (:instance_of ardoq-model-ref-type))))))
+   container-image-seq
+   (map
+    (fn [container-image]
+      (client/->Reference (:_id workspace)
+                          (containers-by-name (first (first container-image)))
+                          (images-by-name (second (first container-image))))))
+   (map
+    (fn [ref] (assoc ref :type (:instance_of ardoq-model-ref-type))))))
 
 (defn image-parent-seq->ardoq-relations [image-parent-seq images-by-name workspace]
   (->>
-    image-parent-seq
-    (map
-      (fn [image-parent]
-        (client/->Reference (:_id workspace)
-                            (images-by-name (first image-parent))
-                            (images-by-name (second image-parent)))))
-    (map
-      (fn [ref] (assoc ref :type (:parent_image ardoq-model-ref-type))))))
+   image-parent-seq
+   (map
+    (fn [image-parent]
+      (client/->Reference (:_id workspace)
+                          (images-by-name (first image-parent))
+                          (images-by-name (second image-parent)))))
+   (map
+    (fn [ref] (assoc ref :type (:parent_image ardoq-model-ref-type))))))
 
 (defn image-tag-ancestry [account password image-tags->container-hashes image-tag]
   (let [container-hashes->image-tags (map-invert image-tags->container-hashes)
         repository (first (clojure.string/split image-tag #":"))]
     (->> image-tag
-        (image-tags->container-hashes)
-        (docker/image-ancestry account password repository)
-        (map (fn [hash] (container-hashes->image-tags hash)))
-        (remove nil?))))
+         (image-tags->container-hashes)
+         (docker/image-ancestry account password repository)
+         (map (fn [hash] (container-hashes->image-tags hash)))
+         (remove nil?))))
 
 (defn pair-consecutive-items [image-tag-seq]
   (loop [image-tags image-tag-seq
          result []]
     (if (> 2 (count image-tags))
       result
-      (recur (rest image-tags) (conj result [(first image-tags) (second image-tags)]))
-      )))
+      (recur (rest image-tags) (conj result [(first image-tags) (second image-tags)])))))
 
 (defn pair-concecutive-item-seq [item-seq]
   (mapcat
-    (fn [e] (pair-consecutive-items e))
-    item-seq))
+   (fn [e] (pair-consecutive-items e))
+   item-seq))
 
 (defn create-model-name->type-id-map [model]
-  (into {} (map (fn [[k v]] [(keyword (str/lower-case (:name v))) k] ) (:root model))))
+  (into {} (map (fn [[k v]] [(keyword (str/lower-case (:name v))) k]) (:root model))))
 
 
 (defn handle-yaml-post [{{token "token", org "org", workspace-name "wsname", repos "repos" account "account" password "password"} :query-params
@@ -199,8 +199,7 @@
         model-name->type-id (create-model-name->type-id-map model)
         yamlStr (slurp body)
         yaml (parse-yaml yamlStr)
-        compose-version (:version yaml)
-        services (if (= "2" compose-version) (:services yaml) yaml)
+        services (:services yaml)
 
         ;; map from image names to Ardoq internal IDs
         container-name->component-id (-> (yaml->container-components services workspace model model-name->type-id)
@@ -223,12 +222,12 @@
                                       (images->name-id-map))
 
         network-name->component-id (-> (yaml->network-components yaml workspace model model-name->type-id)
-                                     (create-resources client)
-                                     (components->name-id-map))
+                                       (create-resources client)
+                                       (components->name-id-map))
 
         volume-name->component-id (-> (yaml->volume-components yaml workspace model model-name->type-id)
-                                    (create-resources client)
-                                    (components->name-id-map))]
+                                      (create-resources client)
+                                      (components->name-id-map))]
 
     ;; creating Ardoq relations for "volumes_from" section in yaml
     (->
@@ -242,11 +241,11 @@
 
     ;; Relations for "volumes" section in yaml
     (->
-      (yaml-reference->ardoq-relations
-        services
-        (clojure.set/union container-name->component-id volume-name->component-id)
-        workspace :volumes)
-      (create-resources client))
+     (yaml-reference->ardoq-relations
+      services
+      (clojure.set/union container-name->component-id volume-name->component-id)
+      workspace :volumes)
+     (create-resources client))
 
     (prn "----------------------------------")
     (prn network-name->component-id)
@@ -256,24 +255,24 @@
 
     ;; Relations for "networks" section in yaml
     (->
-      (yaml-reference->ardoq-relations
-        services
-        (clojure.set/union container-name->component-id network-name->component-id)
-        workspace :networks)
-      (create-resources client))
+     (yaml-reference->ardoq-relations
+      services
+      (clojure.set/union container-name->component-id network-name->component-id)
+      workspace :networks)
+     (create-resources client))
 
     ;; creating relations from Container to image
     (->
-      services
-      yaml->container-image-seq
-      (container-image-seq->ardoq-relations container-name->component-id images-name->component-id workspace)
-      (create-resources client))
+     services
+     yaml->container-image-seq
+     (container-image-seq->ardoq-relations container-name->component-id images-name->component-id workspace)
+     (create-resources client))
 
     (->
-      image-tags-with-ancestors
-      (pair-concecutive-item-seq)
-      (image-parent-seq->ardoq-relations images-name->component-id workspace)
-      (create-resources client))
+     image-tags-with-ancestors
+     (pair-concecutive-item-seq)
+     (image-parent-seq->ardoq-relations images-name->component-id workspace)
+     (create-resources client))
 
 
 
@@ -281,8 +280,7 @@
     {:status  200
      :headers {"Content-Type" "application/json"}
      :body    (generate-string {:status       "ok"
-                                :workspaceURL (str ardoq-WEB-URL "/app/view/relationships/workspace/" (:_id workspace))})
-     }))
+                                :workspaceURL (str ardoq-WEB-URL "/app/view/relationships/workspace/" (:_id workspace))})}))
 
 (defroutes api
   (GET "/" [] index)
