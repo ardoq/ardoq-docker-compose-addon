@@ -48,7 +48,6 @@
 
 
 (defn yaml->container-components [yaml workspace model model-name->type-id]
-  (clojure.pprint/pprint yaml)
   (mapv
    (fn [[k {:keys [image]}]]
      (->
@@ -273,9 +272,6 @@
      (pair-concecutive-item-seq)
      (image-parent-seq->ardoq-relations images-name->component-id workspace)
      (create-resources client))
-
-
-
 
     {:status  200
      :headers {"Content-Type" "application/json"}

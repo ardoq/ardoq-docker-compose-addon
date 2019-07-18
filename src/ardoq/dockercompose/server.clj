@@ -12,7 +12,7 @@
 
 (defn- stop-server [server]
   (when server
-    (server)))                                              ;; run server returns fn that stops itself
+    (server)))                      ;; run server returns fn that stops itself
 
 (defrecord DockerComposeAddon []
   component/Lifecycle
